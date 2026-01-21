@@ -10,7 +10,7 @@ export default defineConfig(async () => ({
   plugins: [vue(),tailwindcss(), VueIconsPlugin()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
+  envPrefix: ['VITE_', 'TAURI_ENV_*'],
   // 1. prevent Vite from obscuring rust errors
   clearScreen: false,
   // 2. tauri expects a fixed port, fail if that port is not available

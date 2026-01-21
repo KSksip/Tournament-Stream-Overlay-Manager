@@ -25,6 +25,18 @@
         },
         {
           "path": "$HOME/code/tauri/testing/*/*/*/*/*"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/*/"
         }
       ]
     },
@@ -39,6 +51,18 @@
         },
         {
           "path": "$HOME/code/tauri/testing/*/*/*/*"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/*/"
         }
       ]
     },
