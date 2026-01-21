@@ -1,0 +1,47 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "axum:default",
+    "websocket:default",
+    "fs:default",
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        {
+          "path": "$HOME/code/tauri/testing/*/*/"
+        },
+        {
+          "path": "$HOME/code/tauri/testing/*/*/*"
+        },
+        {
+          "path": "$HOME/code/tauri/testing/*/*/*/*"
+        },
+        {
+          "path": "$HOME/code/tauri/testing/*/*/*/*/*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write-file",
+      "allow": [
+        {
+          "path": "$HOME/code/tauri/testing/*/"
+        },
+        {
+          "path": "$HOME/code/tauri/testing/*/*/*"
+        },
+        {
+          "path": "$HOME/code/tauri/testing/*/*/*/*"
+        }
+      ]
+    },
+    "store:default"
+  ]
+}
