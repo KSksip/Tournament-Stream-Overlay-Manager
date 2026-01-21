@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-  import { load, Store } from '@tauri-apps/plugin-store'
+  // NOTE TO SELF PLEASE RENAME 
+  // playerPresets to Presets
+  // AND
+  // PlayerPreset to PlayerPresets 
+import { load, Store } from '@tauri-apps/plugin-store'
 import { ref, computed, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
 import { type PlayerPresets } from '../../types/overlay-data';
@@ -43,20 +47,20 @@ const test = ['']
 function loadPlayerPreset(){
   if(playerPresetsKeys.value.includes(selectedPreset.value)) {
     data.value = playerPresets.value[selectedPreset.value]
-    console.log('ran')
-    //ew
     playerName.value = playerPresets.value[selectedPreset.value]!.name
   }
 }
 
 async function savePlayerPreset(){
-  PlayerPreset.save(presetStore, playerName.value, data.value)
+  PlayerPreset.save(presetStore, selectedPreset.value, data.value)
   playerPresets.value = await PlayerPreset.get(presetStore)
 }
 
 async function deletePlayerPreset(){
-  PlayerPreset.delete(presetStore, playerName.value)
+  PlayerPreset.delete(presetStore, selectedPreset.value)
   playerPresets.value = await PlayerPreset.get(presetStore)
+
+  selectedPreset.value = ""
 }
 
 function clearPlayerData(){
@@ -69,8 +73,8 @@ function clearPlayerData(){
     skin: "",
     pronouns: "",
   }
+  chosenCharacter.value = ""
   selectedPreset.value = ""
-  //ew
   playerName.value = ""
 }
 
@@ -86,8 +90,8 @@ watch(playerName, () => {
 watch(chosenCharacter, () => {
   data.value.character = chosenCharacter.value
 
-  if(charactersSkinsList.value.includes(data.value.character)){
-    chosenCharacter.value = 'neutral'
+  if(charactersSkinsList.value.includes("Default")){
+    data.value.skin = "Default"
   }
 })
 
@@ -103,6 +107,7 @@ onMounted(async () => {
 </script>
 <template>
   <div class="flex flex-col gap-2" v-if="data && playerPresets">
+    {{ data }}
     <div class="flex whitespace-nowrap justify-between">
         <div class="flex gap-1 justify-between">
             <h1 class="text-xl">{{ label }}</h1>
