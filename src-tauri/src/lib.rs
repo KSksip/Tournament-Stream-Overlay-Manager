@@ -18,7 +18,6 @@ pub fn run() {
             tauri::async_runtime::spawn(async {
                 server::run().await;
             });
-
             Ok(())
         })
         .run(tauri::generate_context!())

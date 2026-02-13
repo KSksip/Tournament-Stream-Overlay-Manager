@@ -15,28 +15,28 @@
       "identifier": "fs:allow-read-dir",
       "allow": [
         {
-          "path": "$HOME/code/tauri/testing/*/*/"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/"
         },
         {
-          "path": "$HOME/code/tauri/testing/*/*/*"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/*"
         },
         {
-          "path": "$HOME/code/tauri/testing/*/*/*/*"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/*/*"
         },
         {
-          "path": "$HOME/code/tauri/testing/*/*/*/*/*"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/*/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/*"
         }
       ]
     },
@@ -44,25 +44,28 @@
       "identifier": "fs:allow-write-file",
       "allow": [
         {
-          "path": "$HOME/code/tauri/testing/*/"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/"
         },
         {
-          "path": "$HOME/code/tauri/testing/*/*/*"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/*"
         },
         {
-          "path": "$HOME/code/tauri/testing/*/*/*/*"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/"
+          "path": "$HOME/code/tauri/Tournament-Stream-Overlay-Manager/*/*/*/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*"
         },
         {
-          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/*/"
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*"
+        },
+        {
+          "path": "$HOME/Documents/coding/Tournament-Stream-Overlay-Manager/*/*/*/*/*"
         }
       ]
     },
