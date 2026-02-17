@@ -10,7 +10,6 @@ import { getGameData } from './api/game-data';
 import { GameData } from './types/game-data';
 
 import WebSocket from '@tauri-apps/plugin-websocket'
-import VueIcon from '@kalimahapps/vue-icons/VueIcon';
 
 import playerCard from './components/index/player-card.vue';
 import customNumberInput from './components/interface/custom-number-input.vue';
@@ -71,6 +70,8 @@ onMounted(async ()=>{
     for(const key in games.value){
       gamesList.value.push(key)
     }
+
+    isPrepDone.value = true 
   } catch(e) {
     console.log(e)
   }
@@ -83,7 +84,7 @@ onMounted(async ()=>{
     <div class="flex z-40 justify-between bg-white text-zinc-500 shadow-sm shadow-black/10 px-2.5 py-1.5">
       <div class="flex gap-6 px-3 text-black">
         <button class="hover:cursor-pointer" @click="showMenu = !showMenu">
-          <VueIcon class="scale-150 translate-y-0.5" name="ra:hamburger-menu" />
+          <Icon class="scale-150" icon="radix-icons:hamburger-menu" />
         </button>
         <custom-combobox 
           :inputClass="style.ddInputClass"
@@ -96,14 +97,14 @@ onMounted(async ()=>{
       </div>
       <div>
         <button tooltip="help">
-          <VueIcon class="scale-150 translate-y-0.5" name="ra:question-mark-circled" />
+          <Icon class="scale-150 translate-y-0.5" icon="radix-icons:question-mark-circled" />
         </button>
       </div>
     </div>
 
     <div :class="showMenu ? 'animate-fade-in-from-left' : 'animate-fade-out-to-left hidden'" class="w-1/3 z-30 h-full bg-white/95 shadow-md shadow-black/50 fixed outline outline-zinc-300 flex flex-col py-14 ps-7">
       <button class="flex w-fit *:my-auto gap-3 hover:text-zinc-500 hover:cursor-pointer transition">
-        <VueIcon name="ra:gear" class="scale-150"/>
+        <Icon icon="radix-icons:gear" class="scale-150"/>
         <h3 class="text-lg">Settings</h3>
       </button>
     </div>
@@ -120,7 +121,7 @@ onMounted(async ()=>{
             <div class="flex items-center justify-between w-full">
               <customNumberInput v-model="overlayData.player[0].score" class="outline-zinc-300 w-12 rounded-sm inset-shadow-sm py-0.5 ps-2"/>
               <button @click="resetScores()" class="outline flex outline-zinc-300 size-7 rounded-sm shadow-sm hover:cursor-pointer">
-                <VueIcon name="ra:reload" class="m-auto"/>
+                <Icon icon="radix-icons:reload" class="m-auto"/>
               </button>
               <customNumberInput v-model="overlayData.player[1].score" class="outline-zinc-300 w-12 rounded-sm inset-shadow-sm py-0.5 ps-2"/>
             </div>
@@ -169,12 +170,12 @@ onMounted(async ()=>{
   
         <button @click="writeData()" class="w-fit hover:cursor-pointer bg-zinc-400 rounded-sm text-white flex justify-center gap-2 px-3 shadow-sm py-1">
           <span>Reset</span>
-          <VueIcon name="ra:reload" class="my-auto"/>
+          <Icon icon="radix-icons:reload" class="my-auto"/>
         </button>
   
         <button @click="writeData()" class="w-fit hover:cursor-pointer bg-green-400 rounded-sm text-white flex justify-center gap-2 px-3 shadow-sm py-1">
           <span>Update</span>
-          <VueIcon name="ra:update" class="my-auto"/>
+          <Icon icon="radix-icons:update" class="my-auto"/>
         </button>
       </div>
     </div>

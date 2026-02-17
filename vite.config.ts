@@ -1,13 +1,13 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import tailwindcss from '@tailwindcss/vite'
-import VueIconsPlugin from '@kalimahapps/vue-icons/vite';
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
+console.log("ahha " +  host)
 // https://vite.dev/config/
 export default defineConfig(async () => ({
-  plugins: [vue(),tailwindcss(), VueIconsPlugin()],
+  plugins: [vue(),tailwindcss()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   envPrefix: ['VITE_', 'TAURI_ENV_*'],

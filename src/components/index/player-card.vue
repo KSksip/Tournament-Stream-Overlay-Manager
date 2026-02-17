@@ -8,7 +8,6 @@ import { ref, computed, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
 import { type PlayerPresets } from '../../types/overlay-data';
 import { PlayerPreset } from '../../api/player-presets';
-import VueIcon from '@kalimahapps/vue-icons/VueIcon';
 
 let presetStore: Store
 
@@ -190,7 +189,7 @@ onMounted(async () => {
           <div class="flex gap-1 justify-between">
             <button @click="clearPlayerData()" class="bg-zinc-400 text-white rounded-sm px-2 py-0.5 flex gap-1 ">
                 <!-- <span>Clear</span> -->
-                <VueIcon class="my-auto" name="ra:reload"/>
+                <Icon class="my-auto" icon="radix-icons:reload"/>
             </button>
 
             <div class="flex gap-1 grow">
@@ -204,15 +203,15 @@ onMounted(async () => {
               />    
               
               <button @click="loadPlayerPreset()" class="size-7 flex justify-center outline outline-zinc-300 rounded-sm hover:cursor-pointer my-auto">
-                  <VueIcon class="my-auto" name="ra:enter"/>
+                  <Icon class="my-auto" icon="radix-icons:enter"/>
               </button>
 
               <button @click="savePlayerPreset()" class="size-7 flex justify-center outline outline-zinc-300 rounded-sm hover:cursor-pointer my-auto">
-                  <VueIcon class="my-auto" name="ra:file"/>
+                  <Icon class="my-auto" icon="radix-icons:file"/>
               </button>
 
               <button @click="deletePlayerPreset()" class="size-7 flex text-red-600 justify-center outline outline-zinc-300 rounded-sm hover:cursor-pointer my-auto">
-                  <VueIcon class="my-auto" name="ra:trash"/>
+                  <Icon class="my-auto" icon="radix-icons:trash"/>
               </button>
             </div>
           </div>

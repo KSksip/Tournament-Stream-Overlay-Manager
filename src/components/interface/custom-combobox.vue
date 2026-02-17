@@ -5,7 +5,7 @@
         class="z-20 flex border whitespace-nowrap bg-white border-inherit w-full min-w-5">
             <input v-model="modeledVal" @click="handleClickedInput()" :placeholder="props.placeholder" type="text" class="outline-none min-w-1 w-full grow placeholder:text-zinc-500">
             <button class="flex" @click="isFocused = !isFocused">
-                <VueIcon name="ra:chevron-down" class="my-auto hover:cursor-pointer hover:text-zinc-400"/>
+                <Icon icon="radix-icons:chevron-down" class="my-auto hover:cursor-pointer hover:text-zinc-400"/>
             </button>
         </div>
         
@@ -28,7 +28,6 @@
 
 <script lang="ts" setup>
 import { ref, computed, useTemplateRef } from 'vue'
-import VueIcon from '@kalimahapps/vue-icons/VueIcon';
 import { onClickOutside } from '@vueuse/core';
 
 const rootEl = useTemplateRef<HTMLElement>('root')

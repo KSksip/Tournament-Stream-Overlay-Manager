@@ -2,16 +2,15 @@
   <div class="outline flex ps-1">
     <input type="number" class="outline-none inset-shadow-none grow w-2.5 text-center" v-model="modelValue">
     <div class="flex flex-col items-center size-fit my-auto scale-75">
-        <VueIcon name="ra:chevron-up" class="hover:cursor-pointer hover:text-zinc-400 -mt-2 m-px" @click="modelValue++"/>
+        <Icon icon="radix-icons:chevron-up" class="hover:cursor-pointer hover:text-zinc-400 -mt-2 m-px" @click="modelValue++"/>
 
-        <Icon name="ra:chevron-down" class="hover:cursor-pointer hover:text-zinc-400 -mb-2 m-px" @click="modelValue--"/>
+        <Icon icon="radix-icons:chevron-down" class="hover:cursor-pointer hover:text-zinc-400 -mb-2 m-px" @click="modelValue--"/>
     
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import VueIcon from '@kalimahapps/vue-icons/VueIcon';
 import { ref } from 'vue'
 const props = defineProps({
     modelValue: Number,
