@@ -1,13 +1,15 @@
 <!-- TODO: FIX PLAYER DATA ASSIGNMENT -->
 <!-- TODO: FIX PLAYER DATA ASSIGNMENT -->
 <script setup lang="ts">
-import { watch, ref, onMounted } from 'vue'
+import { watch, ref, onMounted, computed } from 'vue'
 import { type OverlayData } from './types/overlay-data';
-import { refreshGameData } from './scripts/update-games-list';
+//import { refreshGameData } from './scripts/update-games-list';
 import { load, type Store } from '@tauri-apps/plugin-store';
 import { Overlay } from './api/overlay-data';
 import { getGameData } from './api/game-data';
 import { GameData } from './types/game-data';
+
+import Database from '@tauri-apps/plugin-sql';
 
 import WebSocket from '@tauri-apps/plugin-websocket'
 
@@ -15,14 +17,14 @@ import playerCard from './components/index/player-card.vue';
 import customNumberInput from './components/interface/custom-number-input.vue';
 import customCombobox from './components/interface/custom-combobox.vue';
 
-let gamesStore: Store
+//let gamesStore: Store
 let overlayStore: Store
-let socket: WebSocket
+let socket: WebSocket 
+let db: Database
 
 const overlayData  = ref<OverlayData>()
 
-const games = ref<GameData>()
-const gamesList = ref<string[]>([])
+const games = ref<{id: number, name: "string"}[]>()
 
 const showMenu = ref(false)
 
@@ -46,10 +48,13 @@ const style = {
   ddMenuClass: "border-zinc-300 rounded-b-sm shadow-sm [&_button]:hover:bg-zinc-100"
 }
 
+
+
 //there has to be a better way theres no way its good to have this much shit loaded in memory
 watch(selectedGame, async () => {
-  if(gamesList.value.includes(selectedGame.value)){
-   charactersData.value = games.value![selectedGame.value].character
+  //maye add a strict clause to combobox element to avoid this if?
+  if(gamesList.includes(selectedGame.value)){
+   charactersData.value = db.select("SELECT * from Character WHERE game_id = $1", [])
   }
 })
 
@@ -59,19 +64,19 @@ const isPrepDone = ref(false)
 
 onMounted(async ()=>{
   try{
-    gamesStore = await load("data.json")
+    
     overlayStore = await load("Overlay\ Data.json")
-    await refreshGameData()
+    db = await Database.load("sqlite:storage.db")
+    //no reason to run this unless migrating data from icons into db
+    //await refreshGameData()
     socket = await WebSocket.connect("ws://localhost:8000")
-    games.value = await getGameData(gamesStore)
+
+    games.value = await db.select("SELECT * from Game")
   
     overlayData.value = await Overlay.get(overlayStore)
 
-    for(const key in games.value){
-      gamesList.value.push(key)
-    }
-
     isPrepDone.value = true 
+
   } catch(e) {
     console.log(e)
   }
@@ -80,6 +85,7 @@ onMounted(async ()=>{
 </script>
 
 <template>
+  {{  }}
   <div class="flex flex-col gap-4" v-if="isPrepDone">
     <div class="flex z-40 justify-between bg-white text-zinc-500 shadow-sm shadow-black/10 px-2.5 py-1.5">
       <div class="flex gap-6 px-3 text-black">
@@ -92,7 +98,7 @@ onMounted(async ()=>{
           class="w-35 my-auto"
           placeholder="Game" 
           v-model="selectedGame"
-          :options="gamesList"  
+          :options="games.map((item) => item.name)"  
         />
       </div>
       <div>
