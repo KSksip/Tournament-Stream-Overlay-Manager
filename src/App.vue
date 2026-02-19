@@ -85,7 +85,6 @@ onMounted(async ()=>{
 </script>
 
 <template>
-  {{  }}
   <div class="flex flex-col gap-4" v-if="isPrepDone">
     <div class="flex z-40 justify-between bg-white text-zinc-500 shadow-sm shadow-black/10 px-2.5 py-1.5">
       <div class="flex gap-6 px-3 text-black">
@@ -98,7 +97,7 @@ onMounted(async ()=>{
           class="w-35 my-auto"
           placeholder="Game" 
           v-model="selectedGame"
-          :options="games.map((item) => item.name)"  
+          :options="games"
         />
       </div>
       <div>

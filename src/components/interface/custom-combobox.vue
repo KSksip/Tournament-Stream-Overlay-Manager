@@ -14,10 +14,10 @@
         class="flex -z-10 bg-white w-full -mt-0.5 absolute flex-col w-inherit border border-t-0 start-0 border-inherit max-h-25 overflow-y-scroll" 
         v-if="isFocused == true">
         <!-- style this -->
-            <button v-for="option in filteredOptions"  @click="selectOption(option)" 
+            <button v-for="option in filteredOptions"  @click="selectOption(option.id)" 
             class="outline-none border-t border-t-inherit w-full text-sm text-start hover:cursor-pointer p-1">
                 <span>
-                 {{ option }}
+                 {{ option.name }}
                 </span>
             </button>
             
@@ -50,7 +50,7 @@ const props = defineProps({
 /* let filteredOptions: string[] = [] */
 
 const filteredOptions = computed(() => {
-    return props.options?.filter((opt: any) => opt.toLowerCase().includes(modeledVal.value.toLowerCase()))
+    return props.options?.filter((option: any) => option.name.toLowerCase().includes(modeledVal.value.toLowerCase()))
 })
 
 const isFocused = ref(false)
