@@ -28,9 +28,9 @@ const games = ref<{id: number, name: "string"}[]>()
 
 const showMenu = ref(false)
 
-const charactersData = ref()
+const characters = ref()
 
-const selectedGame = ref('')
+const selectedGame = ref({id: 0, name: ""})
 
 async function writeData() {
   await Overlay.save(overlayData.value!, overlayStore)
@@ -51,11 +51,16 @@ const style = {
 
 
 //there has to be a better way theres no way its good to have this much shit loaded in memory
-watch(selectedGame, async () => {
-  //maye add a strict clause to combobox element to avoid this if?
-  if(gamesList.includes(selectedGame.value)){
-   charactersData.value = db.select("SELECT * from Character WHERE game_id = $1", [])
+watch(selectedGame, async (newValue, oldValue) => {
+
+  if(
+    games.value!.find((element) => element.id == selectedGame.value.id)
+    &&
+    newValue.id != oldValue.id
+  ){
+    characters.value = await db.select("SELECT * from Character WHERE game_id = $1", [selectedGame.value.id])
   }
+
 })
 
 //make elements stop complaining
@@ -118,7 +123,7 @@ onMounted(async ()=>{
   
       <div class="flex gap-4">
         
-        <playerCard label="Player 1" :charactersList="charactersData" class="w-90" v-model="overlayData.player[0]"></playerCard>
+        <playerCard label="Player 1" :charactersList="characters" class="w-90" v-model="overlayData.player[0]"></playerCard>
         
         <div class="flex flex-col gap-2 items-center">
           <h1 class="text-xl">Score</h1>
@@ -169,7 +174,7 @@ onMounted(async ()=>{
           </div>
         </div>
   
-        <playerCard label="Player 2" :overlay-store="overlayStore" :charactersList="charactersData" class="w-90" v-model="overlayData.player[1]"></playerCard>
+        <playerCard label="Player 2" :overlay-store="overlayStore" :charactersList="characters" class="w-90" v-model="overlayData.player[1]"></playerCard>
       </div>
       <div class="flex gap-2 w-full justify-center">
   
