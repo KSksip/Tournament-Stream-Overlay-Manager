@@ -1,9 +1,9 @@
 <template>
-    <div ref="root" class="relative" :class="isFocused ? 'z-50' : ''" >
+    <div v-if="modelValue" ref="root" class="relative" :class="isFocused ? 'z-50' : ''" >
         <div
         :class="inputClass"
         class="z-20 flex border whitespace-nowrap bg-white border-inherit w-full min-w-5">
-            <input v-model="modeledVal" @click="handleClickedInput()" :placeholder="props.placeholder" type="text" class="outline-none min-w-1 w-full grow placeholder:text-zinc-500">
+            <input v-model="modelValue.name" @click="handleClickedInput()" :placeholder="props.placeholder" type="text" class="outline-none min-w-1 w-full grow placeholder:text-zinc-500">
             <button class="flex" @click="isFocused = !isFocused">
                 <Icon icon="radix-icons:chevron-down" class="my-auto hover:cursor-pointer hover:text-zinc-400"/>
             </button>
@@ -14,7 +14,7 @@
         class="flex -z-10 bg-white w-full -mt-0.5 absolute flex-col w-inherit border border-t-0 start-0 border-inherit max-h-25 overflow-y-scroll" 
         v-if="isFocused == true">
         <!-- style this -->
-            <button v-for="option in filteredOptions"  @click="selectOption(option.id)" 
+            <button v-for="option in filteredOptions"  @click="selectOption({id: option.id, name: option.name})" 
             class="outline-none border-t border-t-inherit w-full text-sm text-start hover:cursor-pointer p-1">
                 <span>
                  {{ option.name }}
@@ -30,46 +30,40 @@
 import { ref, computed, useTemplateRef } from 'vue'
 import { onClickOutside } from '@vueuse/core';
 
+const modelValue = defineModel({type: Object, required: true})
 const rootEl = useTemplateRef<HTMLElement>('root')
-
-onClickOutside(rootEl, (event) => {
-    if(isFocused.value){
-        isFocused.value = false
-    }
-})
-
+const isFocused = ref(false)
+    
 const props = defineProps({
     options: Array,
     placeholder: String,
-    modelValue: String,
-
     inputClass: String,
     menuClass:String,
 })
 
-/* let filteredOptions: string[] = [] */
-
 const filteredOptions = computed(() => {
-    return props.options?.filter((option: any) => option.name.toLowerCase().includes(modeledVal.value.toLowerCase()))
+    return props.options.filter((option: any) => option.name.toLowerCase().includes(modelValue.value.name.toLowerCase()))
 })
 
-const isFocused = ref(false)
-//what
-
-const modeledVal = defineModel({type: String, required: true})
 
 function handleClickedInput(){
     if(!isFocused.value){
-        modeledVal.value = ''
+        modelValue.value.name = ''
     }
     isFocused.value = true
 }
 
 function selectOption(val:any){
     isFocused.value = false
-    console.log(isFocused.value)
-    modeledVal.value = val
+    modelValue.value = val
 }
+
+
+onClickOutside(rootEl, (event) => {
+    if(isFocused.value){
+        isFocused.value = false
+    }
+})
 </script>
 
 <style>
