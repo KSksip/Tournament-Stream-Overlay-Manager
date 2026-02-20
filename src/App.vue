@@ -125,7 +125,7 @@ onMounted(async ()=>{
   
       <div class="flex gap-4">
         
-        <playerCard label="Player 1" :gameId="selectedGame.id" :charactersList="characters" class="w-90" v-model="overlayData.player[0]"></playerCard>
+        <playerCard label="Player 1" :gameId="selectedGame.id" :db="db" :charactersList="characters" class="w-90" v-model="overlayData.player[0]"></playerCard>
         
         <div class="flex flex-col gap-2 items-center">
           <h1 class="text-xl">Score</h1>
@@ -178,7 +178,7 @@ onMounted(async ()=>{
           </div>
         </div>
   
-        <playerCard label="Player 2" :gameId="selectedGame.id" :overlay-store="overlayStore" :charactersList="characters" class="w-90" v-model="overlayData.player[1]"></playerCard>
+        <playerCard label="Player 2" :gameId="selectedGame.id" :db="db" :overlay-store="overlayStore" :charactersList="characters" class="w-90" v-model="overlayData.player[1]"></playerCard>
       </div>
       <div class="flex gap-2 w-full justify-center">
   

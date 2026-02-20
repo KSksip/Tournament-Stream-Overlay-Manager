@@ -6,15 +6,15 @@
 import { load, Store } from '@tauri-apps/plugin-store'
 import { ref, computed, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
-import { type PlayerPresets } from '../../types/overlay-data';
-import { PlayerPreset } from '../../api/player-presets';
+//import { type PlayerPresets } from '../../types/overlay-data';
+//import { PlayerPreset } from '../../api/player-presets';
 import Database from '@tauri-apps/plugin-sql';
 
-let presetStore: Store
-let db: Database
+//let presetStore: Store
 
 const data = defineModel({type: Object, required: true})
 const props = defineProps<{
+    db: Database,
     label: string,
     charactersList: any,
     gameId: number
@@ -76,7 +76,7 @@ function clearPlayerData(){
 
 
 async function savePlayerPreset(){
-  const res = await db.execute(
+  const res = await props.db.execute(
     "INSERT into Player (name, prefix, pronouns, skin_id, character_id, game_id) VALUES ($1, $2, $3, $4, $5, $6)",
     [
       playerName.value,
@@ -98,7 +98,8 @@ watch(playerName, () => {
 watch(chosenCharacter, async (oldValue, newValue) => {
   if(oldValue != newValue){
     data.value.character = chosenCharacter.value.name
-    charactersSkinsList = await db.select("SELECT id, name from Skin WHERE character_id = $1", [chosenCharacter.value.id])
+
+    charactersSkinsList = await props.db.select("SELECT id, name from Skin WHERE character_id = $1", [chosenCharacter.value.id])
 
     const newSkin = charactersSkinsList.find(item => String(item.name) == "Default")
     chosenSkin.value = newSkin ? newSkin : {id: 0, name:""}
@@ -107,9 +108,8 @@ watch(chosenCharacter, async (oldValue, newValue) => {
 
 onMounted(async () => {
   try {
-    presetStore = await load('Player\ Presets.json')
-    presetList.value = await db.select("SELECT id, name from Player")
-    db = await Database.load("sqlite:storage.db")
+    //presetStore = await load('Player\ Presets.json')
+    presetList.value = await props.db.select("SELECT id, name from Player")
   } catch (e){
 
   }
