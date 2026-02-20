@@ -8,42 +8,38 @@ import { ref, computed, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
 import { type PlayerPresets } from '../../types/overlay-data';
 import { PlayerPreset } from '../../api/player-presets';
+import Database from '@tauri-apps/plugin-sql';
 
 let presetStore: Store
+let db: Database
 
 const data = defineModel({type: Object, required: true})
 const props = defineProps<{
     label: string,
     charactersList: any,
+    gameId: number
 }>()
 
-const playerName = ref<string>('')
-const chosenCharacter = ref<string>('')
-const playerPresets = ref<PlayerPresets>({})
-const selectedPreset = ref<string>('')
+//might want to type these
+const playerName = ref("")
+const chosenCharacter = ref({id: 0, name: ""})
+const chosenSkin = ref({id: 0, name: ""})
+const selectedPreset = ref({id: 0, name: ""})
+
+const presetList = ref<{id: number, name: string}[]>([{id: 0, name: "no presets"}])
 
 const style = {
   ddInputClass: "rounded-sm px-1 py-0.5 border-zinc-300 inset-shadow-sm",
   ddMenuClass: "border-zinc-300 rounded-b-sm shadow-sm [&_button]:hover:bg-zinc-100"
 }
 
-const charactersSkinsList = computed(() => {
-  if(props.charactersList[data.value.character]?.skins){
-    return props.charactersList[data.value.character].skins
-
-  } else {
-    return []
-  }
-})
-
-const playerPresetsKeys = computed(()=>{
-  return Object.keys(playerPresets.value)
-})
+let charactersSkinsList: {id: 0, name: ""}[]
+let namesList: {id: 0, name: ""}[]
 
 //shut up (fix this pls)
-const test = ['']
+const test = [{id: "someId", name: "someName"}]
 
-function loadPlayerPreset(){
+/* function loadPlayerPreset(){
   if(playerPresetsKeys.value.includes(selectedPreset.value)) {
     data.value = playerPresets.value[selectedPreset.value]
     playerName.value = playerPresets.value[selectedPreset.value]!.name
@@ -76,28 +72,44 @@ function clearPlayerData(){
   selectedPreset.value = ""
   playerName.value = ""
 }
+ */
+
+
+async function savePlayerPreset(){
+  const res = await db.execute(
+    "INSERT into Player (name, prefix, pronouns, skin_id, character_id, game_id) VALUES ($1, $2, $3, $4, $5, $6)",
+    [
+      playerName.value,
+      data.value.prefix,
+      data.value.pronouns,
+      chosenCharacter.value.id,
+      chosenSkin.value.id,
+      props.gameId,
+    ]
+  )
+}
 
 watch(playerName, () => {
+  console.log("asasdasd")
   data.value.name = playerName.value
 
-  console.log(playerPresetsKeys.value.includes(data.value.name))
-  if(playerPresetsKeys.value.includes(data.value.name)){
-    selectedPreset.value = data.value.name
-  }
 })
 
-watch(chosenCharacter, () => {
-  data.value.character = chosenCharacter.value
+watch(chosenCharacter, async (oldValue, newValue) => {
+  if(oldValue != newValue){
+    data.value.character = chosenCharacter.value.name
+    charactersSkinsList = await db.select("SELECT id, name from Skin WHERE character_id = $1", [chosenCharacter.value.id])
 
-  if(charactersSkinsList.value.includes("Default")){
-    data.value.skin = "Default"
+    const newSkin = charactersSkinsList.find(item => String(item.name) == "Default")
+    chosenSkin.value = newSkin ? newSkin : {id: 0, name:""}
   }
-})
+}) 
 
 onMounted(async () => {
   try {
     presetStore = await load('Player\ Presets.json')
-    playerPresets.value = await PlayerPreset.get(presetStore)
+    presetList.value = await db.select("SELECT id, name from Player")
+    db = await Database.load("sqlite:storage.db")
   } catch (e){
 
   }
@@ -105,7 +117,8 @@ onMounted(async () => {
 
 </script>
 <template>
-  <div class="flex flex-col gap-2" v-if="data && playerPresets">
+  {{ charactersSkinsList }}
+  <div class="flex flex-col gap-2" v-if="data && presetList">
     {{ data }}
     <div class="flex whitespace-nowrap justify-between">
         <div class="flex gap-1 justify-between">
@@ -127,15 +140,17 @@ onMounted(async () => {
               class="w-25"
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
+              :returnName="true"
               placeholder="Prefix" 
               v-model="data.prefix"
             />
             <custom-combobox 
-              :options="test" 
+              :options="namesList" 
               class="grow"
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
               placeholder="Name" 
+              :returnName="true"
               v-model="playerName"
             />
           </div>
@@ -144,6 +159,7 @@ onMounted(async () => {
             :options="test" 
             :inputClass="style.ddInputClass"
             :menuClass="style.ddMenuClass"
+            :returnName="true"
             placeholder="Pronouns" 
             v-model="data.pronouns"
           />
@@ -151,7 +167,7 @@ onMounted(async () => {
           <div v-if="charactersList" class="flex w-full gap-1">
             <custom-combobox 
               class=""
-              :options="Object.keys(charactersList)" 
+              :options="charactersList" 
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
               placeholder="Character" 
@@ -162,7 +178,7 @@ onMounted(async () => {
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
               placeholder="Skin" 
-              v-model="data.skin"
+              v-model="chosenSkin"
               :options="charactersSkinsList"  
             />  
           </div>
@@ -173,6 +189,7 @@ onMounted(async () => {
               :options="test" 
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
+              :returnName="true"
               placeholder="Country" 
               v-model="data.Country"
             />
@@ -180,6 +197,7 @@ onMounted(async () => {
               class=""
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
+              :returnName="true"
               placeholder="Region" 
               v-model="data.Region"
               :options="test"  
@@ -194,7 +212,7 @@ onMounted(async () => {
 
             <div class="flex gap-1 grow">
               <custom-combobox
-              :options="playerPresetsKeys" 
+              :options="presetList" 
               class="w-40 grow"
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
