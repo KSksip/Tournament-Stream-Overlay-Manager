@@ -1,3 +1,5 @@
+<!-- NOTE TO SELF: LOAD SAVED OVERLAY STATE FROM THE JSON N WHAT NOT!!! -->
+
 <script lang="ts" setup>
 import { ref, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
