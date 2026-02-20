@@ -33,6 +33,14 @@ const style = {
   ddMenuClass: "border-zinc-300 rounded-b-sm shadow-sm [&_button]:hover:bg-zinc-100"
 }
 
+const pronounsList = [
+  {id:0, name: "she/her"},
+  {id:0, name: "he/him"},
+  {id:0, name: "she/they"},
+  {id:0, name: "he/they"},
+  {id:0, name: "they/them"},
+]
+
 const charactersSkinsList = ref<ButtonData[]>([{id: 0, name: ""}])
 
 //shut up (fix this pls)
@@ -177,7 +185,7 @@ onMounted(async () => {
           </div>
 
           <custom-combobox 
-            :options="test" 
+            :options="pronounsList" 
             :inputClass="style.ddInputClass"
             :menuClass="style.ddMenuClass"
             :returnName="true"
