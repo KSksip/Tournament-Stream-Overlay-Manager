@@ -30,6 +30,8 @@ const showMenu = ref(false)
 
 const characters = ref()
 
+const testing = ref("")
+
 const selectedGame = ref({id: 0, name: ""})
 
 async function writeData() {
@@ -64,7 +66,7 @@ watch(selectedGame, async (newValue, oldValue) => {
 })
 
 //make elements stop complaining
-const test = ref([])
+const test = ref([{id:0, name:"test"}])
 const isPrepDone = ref(false)
 
 onMounted(async ()=>{
@@ -123,7 +125,7 @@ onMounted(async ()=>{
   
       <div class="flex gap-4">
         
-        <playerCard label="Player 1" :charactersList="characters" class="w-90" v-model="overlayData.player[0]"></playerCard>
+        <playerCard label="Player 1" :gameId="selectedGame.id" :charactersList="characters" class="w-90" v-model="overlayData.player[0]"></playerCard>
         
         <div class="flex flex-col gap-2 items-center">
           <h1 class="text-xl">Score</h1>
@@ -145,7 +147,7 @@ onMounted(async ()=>{
                 <button :class="overlayData.setInfo.bestOf == 5 ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'" @click="overlayData.setInfo.bestOf = 5">5</button>
                 
                 <!-- make this thing do something -->
-                <button class=""><VueIcon name="ra:dots-horizontal" class="size-fit translate-y-0.5 text-black"/></button>
+                <button class=""><Icon name="radix-icons:dots-horizontal" class="size-fit translate-y-0.5 text-black"/></button>
               </div>
             </div>
             
@@ -154,6 +156,7 @@ onMounted(async ()=>{
               :menuClass="style.ddMenuClass"
               class="w-35"
               placeholder="Phase" 
+              :returnName="true"
               v-model="overlayData.setInfo.phase"
               :options="test"  
             />
@@ -163,6 +166,7 @@ onMounted(async ()=>{
               :menuClass="style.ddMenuClass"
               class="w-35"
               placeholder="Match" 
+              :returnName="true"
               v-model="overlayData.setInfo.match"
               :options="test"  
             />
@@ -174,7 +178,7 @@ onMounted(async ()=>{
           </div>
         </div>
   
-        <playerCard label="Player 2" :overlay-store="overlayStore" :charactersList="characters" class="w-90" v-model="overlayData.player[1]"></playerCard>
+        <playerCard label="Player 2" :gameId="selectedGame.id" :overlay-store="overlayStore" :charactersList="characters" class="w-90" v-model="overlayData.player[1]"></playerCard>
       </div>
       <div class="flex gap-2 w-full justify-center">
   
