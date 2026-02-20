@@ -3,8 +3,9 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
-
+import { fetch } from '@tauri-apps/plugin-http';
 import Database from '@tauri-apps/plugin-sql';
+import { useDebounceFn } from '@vueuse/core';
 
 const data = defineModel({type: Object, required: true})
 const props = defineProps<{
@@ -23,6 +24,7 @@ const playerName = ref<string>("")
 const chosenCharacter = ref<ButtonData>({id: 0, name: ""})
 const chosenSkin = ref<ButtonData>({id: 0, name: ""})
 const selectedPreset = ref<ButtonData>({id: 0, name: ""})
+const selectedCountry = ref<ButtonData>({id: 0, name: ""})
 
 const presetList = ref<ButtonData[]>([{id: 0, name: "no presets"}])
 
@@ -50,7 +52,7 @@ async function savePlayerPreset(){
       chosenCharacter.value.id != 0 ? chosenCharacter.value.id : null,
       chosenSkin.value.id != 0 ? chosenSkin.value.id : null,
       props.gameId != 0 ? props.gameId : null,
-      data.value.country 
+      selectedCountry.value.name
     ]
   )
   selectedPreset.value = {id: res.lastInsertId!, name: playerName.value}
@@ -72,6 +74,7 @@ function clearPlayerData(){
   chosenCharacter.value = {id: 0, name: ""}
   selectedPreset.value = {id: 0, name: ""}
   playerName.value = ""
+  selectedCountry.value.name = ""
 }
 
 async function loadPlayerPreset(){
@@ -80,7 +83,7 @@ async function loadPlayerPreset(){
   playerName.value = res[0].name
   data.value.prefix = res[0].prefix
   data.value.pronouns = res[0].pronouns
-  data.value.country = res[0].country
+  selectedCountry.value.name = res[0].country
 } 
 
 async function deletePlayerPreset(){
@@ -105,11 +108,28 @@ watch(chosenCharacter, async (oldValue, newValue) => {
   }
 }) 
 
+const countries = ref({})
+const formattedCountries = ref<ButtonData[]>()
+
+
+const debounceCountryFetch = useDebounceFn(async ()=> {
+  console.log("a")
+  await fetch(`https://restcountries.com/v3.1/name/${selectedCountry.value.name}?fields=name`, {
+    method: "GET"
+  }).then(async (res) => {
+    countries.value = await res.json()
+  })
+
+  formattedCountries.value = countries.value.map((item) => { return {id: 0, name: item.name.common} }) 
+  data.value.country = selectedCountry.value.name
+}, 300)  
+
+watch(selectedCountry.value, debounceCountryFetch)
+
 onMounted(async () => {
   try {
     //presetStore = await load('Player\ Presets.json')
     presetList.value = await props.db.select("SELECT id, name from Player")
-
   } catch (e){
 
   }
@@ -118,6 +138,9 @@ onMounted(async () => {
 </script>
 <template>
   <div class="flex flex-col gap-2" v-if="data && presetList">
+    <!-- {{ selectedCountry }} -->
+    {{ data }}
+    <!-- {{ data }} -->
     <div class="flex whitespace-nowrap justify-between">
         <div class="flex gap-1 justify-between">
             <h1 class="text-xl">{{ label }}</h1>
@@ -184,12 +207,11 @@ onMounted(async () => {
           <div class="flex w-full gap-1">
             <custom-combobox 
               class="w-full"
-              :options="test" 
+              :options="formattedCountries" 
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
-              :returnName="true"
               placeholder="Country" 
-              v-model="data.country"
+              v-model="selectedCountry"
             />
             <!-- <custom-combobox 
               class=""

@@ -71,6 +71,14 @@
     },
     "store:default",
     "sql:default",
-    "sql:allow-execute"
+    "sql:allow-execute",
+    "http:default",
+    "http:allow-fetch",
+    "http:allow-fetch-read-body",
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "https://restcountries.com/v3.1/name/*" }],
+      "deny": [{ "url": "https://private.tauri.app" }]
+    }
   ]
 }
