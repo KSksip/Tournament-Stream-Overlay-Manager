@@ -1,16 +1,8 @@
 <script lang="ts" setup>
-  // NOTE TO SELF PLEASE RENAME 
-  // playerPresets to Presets
-  // AND
-  // PlayerPreset to PlayerPresets 
-import { load, Store } from '@tauri-apps/plugin-store'
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import customCombobox from '../interface/custom-combobox.vue';
-//import { type PlayerPresets } from '../../types/overlay-data';
-//import { PlayerPreset } from '../../api/player-presets';
-import Database from '@tauri-apps/plugin-sql';
 
-//let presetStore: Store
+import Database from '@tauri-apps/plugin-sql';
 
 const data = defineModel({type: Object, required: true})
 const props = defineProps<{
@@ -39,23 +31,22 @@ let namesList: {id: 0, name: ""}[]
 //shut up (fix this pls)
 const test = [{id: "someId", name: "someName"}]
 
-/* function loadPlayerPreset(){
-  if(playerPresetsKeys.value.includes(selectedPreset.value)) {
-    data.value = playerPresets.value[selectedPreset.value]
-    playerName.value = playerPresets.value[selectedPreset.value]!.name
-  }
-}
 
 async function savePlayerPreset(){
-  PlayerPreset.save(presetStore, selectedPreset.value, data.value)
-  playerPresets.value = await PlayerPreset.get(presetStore)
-}
+  const res = await props.db.execute(
+    "INSERT into Player (name, prefix, pronouns, skin_id, character_id, game_id, country) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+    [
+      data.value.name,
+      data.value.prefix,
+      data.value.pronouns,
+      chosenCharacter.value.id != 0 ? chosenCharacter.value.id : null,
+      chosenSkin.value.id != 0 ? chosenSkin.value.id : null,
+      props.gameId != 0 ? props.gameId : null,
+      data.value.country
+    ]
+  )
 
-async function deletePlayerPreset(){
-  PlayerPreset.delete(presetStore, selectedPreset.value)
-  playerPresets.value = await PlayerPreset.get(presetStore)
-
-  selectedPreset.value = ""
+  presetList.value = await props.db.select("SELECT id, name from Player")
 }
 
 function clearPlayerData(){
@@ -68,25 +59,24 @@ function clearPlayerData(){
     skin: "",
     pronouns: "",
   }
-  chosenCharacter.value = ""
-  selectedPreset.value = ""
+  chosenCharacter.value = {id: 0, name: ""}
+  selectedPreset.value = {id: 0, name: ""}
   playerName.value = ""
 }
- */
 
+async function loadPlayerPreset(){
+  const res = await props.db.select("SELECT * from Player WHERE id = $1", [selectedPreset.value.id])
 
-async function savePlayerPreset(){
-  const res = await props.db.execute(
-    "INSERT into Player (name, prefix, pronouns, skin_id, character_id, game_id) VALUES ($1, $2, $3, $4, $5, $6)",
-    [
-      playerName.value,
-      data.value.prefix,
-      data.value.pronouns,
-      chosenCharacter.value.id,
-      chosenSkin.value.id,
-      props.gameId,
-    ]
-  )
+  playerName.value = res[0].name
+  data.value.prefix = res[0].prefix
+  data.value.pronouns = res[0].pronouns
+  data.value.country = res[0].country
+} 
+
+async function deletePlayerPreset(){
+  const res = await props.db.execute("DELETE from Player WHERE id = $1", [selectedPreset.value.id])
+  presetList.value = await props.db.select("SELECT id, name from Player")
+  clearPlayerData()
 }
 
 watch(playerName, () => {
@@ -117,9 +107,7 @@ onMounted(async () => {
 
 </script>
 <template>
-  {{ charactersSkinsList }}
   <div class="flex flex-col gap-2" v-if="data && presetList">
-    {{ data }}
     <div class="flex whitespace-nowrap justify-between">
         <div class="flex gap-1 justify-between">
             <h1 class="text-xl">{{ label }}</h1>
@@ -185,15 +173,15 @@ onMounted(async () => {
           
           <div class="flex w-full gap-1">
             <custom-combobox 
-              class=""
+              class="w-full"
               :options="test" 
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
               :returnName="true"
               placeholder="Country" 
-              v-model="data.Country"
+              v-model="data.country"
             />
-            <custom-combobox 
+            <!-- <custom-combobox 
               class=""
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
@@ -201,7 +189,7 @@ onMounted(async () => {
               placeholder="Region" 
               v-model="data.Region"
               :options="test"  
-            />  
+            />   -->
           </div>
 
           <div class="flex gap-1 justify-between">
