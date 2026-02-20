@@ -32,6 +32,8 @@ const characters = ref()
 
 const testing = ref("")
 
+const customBestOfInput = ref(false)
+
 const selectedGame = ref({id: 0, name: ""})
 
 async function writeData() {
@@ -140,14 +142,26 @@ onMounted(async ()=>{
 
             <div class="flex flex-col items-center gap-0.5">
               <span class="">Best Of</span>
-              <div class="flex gap-2 [&_button]:size-6 [&_button]:outline [&_button]:outline-zinc-300 [&_button]:rounded-sm [&_button]:hover:cursor-pointer">
-                <!-- fix this (make concise) -->
-                <button :class="overlayData.setInfo.bestOf == 1 ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'" @click="overlayData.setInfo.bestOf = 1">1</button>
-                <button :class="overlayData.setInfo.bestOf == 3 ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'" @click="overlayData.setInfo.bestOf = 3">3</button>
-                <button :class="overlayData.setInfo.bestOf == 5 ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'" @click="overlayData.setInfo.bestOf = 5">5</button>
-                
-                <!-- make this thing do something -->
-                <button class=""><Icon name="radix-icons:dots-horizontal" class="size-fit translate-y-0.5 text-black"/></button>
+              <div class="flex w-full  justify-between gap-2 [&_button]:w-7 [&_button]:outline [&_button]:outline-zinc-300 [&_button]:rounded-sm [&_button]:hover:cursor-pointer">
+                <div v-for="bestOfN in [1, 3, 5]" v-if="!customBestOfInput">
+                  <button
+                    :class="overlayData.setInfo.bestOf == bestOfN ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'" 
+                    @click="overlayData.setInfo.bestOf = bestOfN"
+                    >
+                    {{ bestOfN }}
+                  </button>
+                </div>
+
+                <div v-else class="rounded-sm border-zinc-300 inset-shadow-sm outline outline-zinc-300 w-25">
+                  <input v-model="overlayData.setInfo.bestOf" type="text" class="outline-none min-w-1 text-center px-2 grow w-full placeholder:text-zinc-500">
+                </div>
+
+                <button
+                  @click="customBestOfInput = !customBestOfInput"
+                  :class="customBestOfInput ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'"
+                >
+                  <Icon icon="radix-icons:pencil-2" class="size-fit mx-auto text-black"/>
+                </button>
               </div>
             </div>
             
