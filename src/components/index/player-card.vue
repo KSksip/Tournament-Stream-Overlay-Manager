@@ -146,9 +146,6 @@ onMounted(async () => {
 </script>
 <template>
   <div class="flex flex-col gap-2" v-if="data && presetList">
-    <!-- {{ selectedCountry }} -->
-    {{ data }}
-    <!-- {{ data }} -->
     <div class="flex whitespace-nowrap justify-between">
         <div class="flex gap-1 justify-between">
             <h1 class="text-xl">{{ label }}</h1>
