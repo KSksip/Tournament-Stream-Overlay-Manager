@@ -24,7 +24,7 @@ const chosenCharacter = ref<ButtonData>({id: 0, name: ""})
 const chosenSkin = ref<ButtonData>({id: 0, name: ""})
 const selectedPreset = ref<ButtonData>({id: 0, name: ""})
 
-const presetList = ref<{id: number, name: string}[]>([{id: 0, name: "no presets"}])
+const presetList = ref<ButtonData[]>([{id: 0, name: "no presets"}])
 
 const style = {
   ddInputClass: "rounded-sm px-1 py-0.5 border-zinc-300 inset-shadow-sm",
@@ -32,27 +32,31 @@ const style = {
 }
 
 const charactersSkinsList = ref<ButtonData[]>([{id: 0, name: ""}])
-let namesList: {id: 0, name: ""}[]
 
 //shut up (fix this pls)
 const test = [{id: "someId", name: "someName"}]
 
 
 async function savePlayerPreset(){
+
   const res = await props.db.execute(
-    "INSERT into Player (name, prefix, pronouns, skin_id, character_id, game_id, country) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+    "REPLACE into Player (id, name, prefix, pronouns, skin_id, character_id, game_id, country) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
     [
+      selectedPreset.value.id == 0 ? null : selectedPreset.value.id,
+
       data.value.name,
       data.value.prefix,
       data.value.pronouns,
       chosenCharacter.value.id != 0 ? chosenCharacter.value.id : null,
       chosenSkin.value.id != 0 ? chosenSkin.value.id : null,
       props.gameId != 0 ? props.gameId : null,
-      data.value.country
+      data.value.country 
     ]
   )
+  selectedPreset.value = {id: res.lastInsertId!, name: playerName.value}
 
   presetList.value = await props.db.select("SELECT id, name from Player")
+
 }
 
 function clearPlayerData(){
@@ -86,7 +90,6 @@ async function deletePlayerPreset(){
 }
 
 watch(playerName, () => {
-  console.log("asasdasd")
   data.value.name = playerName.value
 
 })
@@ -106,6 +109,7 @@ onMounted(async () => {
   try {
     //presetStore = await load('Player\ Presets.json')
     presetList.value = await props.db.select("SELECT id, name from Player")
+
   } catch (e){
 
   }
@@ -139,7 +143,7 @@ onMounted(async () => {
               v-model="data.prefix"
             />
             <custom-combobox 
-              :options="namesList" 
+              :options="presetList" 
               class="grow"
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
