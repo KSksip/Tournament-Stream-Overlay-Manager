@@ -27,7 +27,7 @@ export async function refreshGameData(): Promise<void> {
             for (const skin of skins){
                 skin.name = skin.name.replace(".png", "")
                 
-                db.execute(`INSERT INTO Character VALUES (null, $1, $2)`, [skin.name, characterResult.lastInsertId])
+                db.execute(`INSERT INTO Skin VALUES (null, $1, $2)`, [skin.name, characterResult.lastInsertId])
                 gamedata[game.name].character![character.name].skins!.push(skin.name)
             }
         }
