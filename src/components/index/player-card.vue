@@ -159,7 +159,7 @@ onMounted(async () => {
         </div>
     </div>
     <div class="flex gap-10">
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1 w-full">
           <div class="flex gap-1">
             <custom-combobox 
               :options="test" 

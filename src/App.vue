@@ -17,30 +17,27 @@ import playerCard from './components/index/player-card.vue';
 import customNumberInput from './components/interface/custom-number-input.vue';
 import customCombobox from './components/interface/custom-combobox.vue';
 
-//let gamesStore: Store
 let overlayStore: Store
 let socket: WebSocket 
 let db: Database
 
 const overlayData  = ref<OverlayData>()
-
-const games = ref<{id: number, name: "string"}[]>()
-
-const showMenu = ref(false)
-
-const characters = ref()
-
-const testing = ref("")
-
-const customBestOfInput = ref(false)
-
+  
 const selectedGame = ref({id: 0, name: ""})
+
+const gamesList = ref<{id: number, name: "string"}[]>()
+const charactersList = ref()
+
+const showHamburgerMenu = ref(false)
+const showCustomBestOfInput = ref(false)
+
+
 
 async function writeData() {
   await Overlay.save(overlayData.value!, overlayStore)
-  socket.send('update')
-}
 
+  socket.send(JSON.stringify(overlayData.value))
+}
 
 function resetScores(){
   overlayData.value!.player[0].score = 0
@@ -52,23 +49,38 @@ const style = {
   ddMenuClass: "border-zinc-300 rounded-b-sm shadow-sm [&_button]:hover:bg-zinc-100"
 }
 
+const phaseList = [  
+  { id: 0, name: "Pools" },
+  { id: 0, name: "Top 8" },
+  { id: 0, name: "Top 16" },
+  { id: 0, name: "Top 32" },
+  { id: 0, name: "Top 64" },
+]
 
+const matchList = [
+  { id: 0, name: "Winners Round x"},
+  { id: 0, name: "Winners Quarter-Final"},
+  { id: 0, name: "Winners Semi-Final"},
+  { id: 0, name: "Winners Final"},
+  { id: 0, name: "Losers Round x"},
+  { id: 0, name: "Losers Quarter-Final"},
+  { id: 0, name: "Losers Semi-Final"},
+  { id: 0, name: "Losers Final"},
+  { id: 0, name: "Grand Final"},
+]
 
 //there has to be a better way theres no way its good to have this much shit loaded in memory
 watch(selectedGame, async (newValue, oldValue) => {
-
   if(
-    games.value!.find((element) => element.id == selectedGame.value.id)
+    gamesList.value!.find((element) => element.id == selectedGame.value.id)
     &&
     newValue.id != oldValue.id
   ){
-    characters.value = await db.select("SELECT * from Character WHERE game_id = $1", [selectedGame.value.id])
+    charactersList.value = await db.select("SELECT * from Character WHERE game_id = $1", [selectedGame.value.id])
   }
-
 })
 
 //make elements stop complaining
-const test = ref([{id:0, name:"test"}])
 const isPrepDone = ref(false)
 
 onMounted(async ()=>{
@@ -80,7 +92,7 @@ onMounted(async ()=>{
     //await refreshGameData()
     socket = await WebSocket.connect("ws://localhost:8000")
 
-    games.value = await db.select("SELECT * from Game")
+    gamesList.value = await db.select("SELECT * from Game")
   
     overlayData.value = await Overlay.get(overlayStore)
 
@@ -97,7 +109,7 @@ onMounted(async ()=>{
   <div class="flex flex-col gap-4" v-if="isPrepDone">
     <div class="flex z-40 justify-between bg-white text-zinc-500 shadow-sm shadow-black/10 px-2.5 py-1.5">
       <div class="flex gap-6 px-3 text-black">
-        <button class="hover:cursor-pointer" @click="showMenu = !showMenu">
+        <button class="hover:cursor-pointer" @click="showHamburgerMenu = !showHamburgerMenu">
           <Icon class="scale-150" icon="radix-icons:hamburger-menu" />
         </button>
         <custom-combobox 
@@ -106,7 +118,7 @@ onMounted(async ()=>{
           class="w-35 my-auto"
           placeholder="Game" 
           v-model="selectedGame"
-          :options="games"
+          :options="gamesList"
         />
       </div>
       <div>
@@ -116,7 +128,7 @@ onMounted(async ()=>{
       </div>
     </div>
 
-    <div :class="showMenu ? 'animate-fade-in-from-left' : 'animate-fade-out-to-left hidden'" class="w-1/3 z-30 h-full bg-white/95 shadow-md shadow-black/50 fixed outline outline-zinc-300 flex flex-col py-14 ps-7">
+    <div :class="showHamburgerMenu ? 'animate-fade-in-from-left' : 'animate-fade-out-to-left hidden'" class="w-1/3 z-30 h-full bg-white/95 shadow-md shadow-black/50 fixed outline outline-zinc-300 flex flex-col py-14 ps-7">
       <button class="flex w-fit *:my-auto gap-3 hover:text-zinc-500 hover:cursor-pointer transition">
         <Icon icon="radix-icons:gear" class="scale-150"/>
         <h3 class="text-lg">Settings</h3>
@@ -125,13 +137,13 @@ onMounted(async ()=>{
 
     <div v-if="overlayData" class="flex flex-col gap-3 items-center pb-10">
   
-      <div class="flex gap-4">
+      <div class="flex gap-4 px-3">
         
-        <playerCard label="Player 1" :gameId="selectedGame.id" :db="db" :charactersList="characters" class="w-90" v-model="overlayData.player[0]"></playerCard>
+        <playerCard label="Player 1" :gameId="selectedGame.id" :db="db" :charactersList="charactersList" class="w-2/5" v-model="overlayData.player[0]"></playerCard>
         
-        <div class="flex flex-col gap-2 items-center">
+        <div class="flex flex-col gap-2 items-center w-1/5">
           <h1 class="text-xl">Score</h1>
-          <div class="flex flex-col items-center gap-2">
+          <div class="flex flex-col w-full items-center gap-2">
             <div class="flex items-center justify-between w-full">
               <customNumberInput v-model="overlayData.player[0].score" class="outline-zinc-300 w-12 rounded-sm inset-shadow-sm py-0.5 ps-2"/>
               <button @click="resetScores()" class="outline flex outline-zinc-300 size-7 rounded-sm shadow-sm hover:cursor-pointer">
@@ -142,8 +154,8 @@ onMounted(async ()=>{
 
             <div class="flex flex-col items-center gap-0.5">
               <span class="">Best Of</span>
-              <div class="flex w-full  justify-between gap-2 [&_button]:w-7 [&_button]:outline [&_button]:outline-zinc-300 [&_button]:rounded-sm [&_button]:hover:cursor-pointer">
-                <div v-for="bestOfN in [1, 3, 5]" v-if="!customBestOfInput">
+              <div class="flex w-full justify-between gap-2 [&_button]:w-7 [&_button]:outline [&_button]:outline-zinc-300 [&_button]:rounded-sm [&_button]:hover:cursor-pointer">
+                <div v-for="bestOfN in [1, 3, 5]" v-if="!showCustomBestOfInput">
                   <button
                     :class="overlayData.setInfo.bestOf == bestOfN ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'" 
                     @click="overlayData.setInfo.bestOf = bestOfN"
@@ -157,8 +169,8 @@ onMounted(async ()=>{
                 </div>
 
                 <button
-                  @click="customBestOfInput = !customBestOfInput"
-                  :class="customBestOfInput ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'"
+                  @click="showCustomBestOfInput = !showCustomBestOfInput"
+                  :class="showCustomBestOfInput ? 'inset-shadow-sm inset-shadow-black/15' : 'shadow-sm'"
                 >
                   <Icon icon="radix-icons:pencil-2" class="size-fit mx-auto text-black"/>
                 </button>
@@ -168,21 +180,21 @@ onMounted(async ()=>{
             <custom-combobox 
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
-              class="w-35"
+              class="w-full"
               placeholder="Phase" 
               :returnName="true"
               v-model="overlayData.setInfo.phase"
-              :options="test"  
+              :options="phaseList"  
             />
   
             <custom-combobox 
               :inputClass="style.ddInputClass"
               :menuClass="style.ddMenuClass"
-              class="w-35"
+              class="w-full"
               placeholder="Match" 
               :returnName="true"
               v-model="overlayData.setInfo.match"
-              :options="test"  
+              :options="matchList"  
             />
             
             <!-- <button @click="writeData()" class="w-full hover:cursor-pointer bg-yellow-400 rounded-sm text-white flex justify-center gap-2 px-3 shadow-sm py-1">
@@ -192,7 +204,7 @@ onMounted(async ()=>{
           </div>
         </div>
   
-        <playerCard label="Player 2" :gameId="selectedGame.id" :db="db" :overlay-store="overlayStore" :charactersList="characters" class="w-90" v-model="overlayData.player[1]"></playerCard>
+        <playerCard label="Player 2" :gameId="selectedGame.id" :db="db" :overlay-store="overlayStore" :charactersList="charactersList" class="w-2/5" v-model="overlayData.player[1]"></playerCard>
       </div>
       <div class="flex gap-2 w-full justify-center">
   
