@@ -14,11 +14,15 @@ const props = defineProps<{
     gameId: number
 }>()
 
-//might want to type these
-const playerName = ref("")
-const chosenCharacter = ref({id: 0, name: ""})
-const chosenSkin = ref({id: 0, name: ""})
-const selectedPreset = ref({id: 0, name: ""})
+type ButtonData = {
+  id: number, 
+  name: string
+}
+
+const playerName = ref<string>("")
+const chosenCharacter = ref<ButtonData>({id: 0, name: ""})
+const chosenSkin = ref<ButtonData>({id: 0, name: ""})
+const selectedPreset = ref<ButtonData>({id: 0, name: ""})
 
 const presetList = ref<{id: number, name: string}[]>([{id: 0, name: "no presets"}])
 
@@ -27,7 +31,7 @@ const style = {
   ddMenuClass: "border-zinc-300 rounded-b-sm shadow-sm [&_button]:hover:bg-zinc-100"
 }
 
-let charactersSkinsList: {id: 0, name: ""}[]
+const charactersSkinsList = ref<ButtonData[]>([{id: 0, name: ""}])
 let namesList: {id: 0, name: ""}[]
 
 //shut up (fix this pls)
@@ -90,11 +94,11 @@ watch(playerName, () => {
 watch(chosenCharacter, async (oldValue, newValue) => {
   if(oldValue != newValue){
     data.value.character = chosenCharacter.value.name
-
-    charactersSkinsList = await props.db.select("SELECT id, name from Skin WHERE character_id = $1", [chosenCharacter.value.id])
-
-    const newSkin = charactersSkinsList.find(item => String(item.name) == "Default")
-    chosenSkin.value = newSkin ? newSkin : {id: 0, name:""}
+  
+    charactersSkinsList.value = await props.db.select("SELECT id, name from Skin WHERE character_id = $1", [chosenCharacter.value.id])
+  
+    const newSkin = charactersSkinsList.value.find(item => String(item.name) == "Default")
+    chosenSkin.value = newSkin ? {id: newSkin.id, name: newSkin.name} : {id: 0, name: ""}
   }
 }) 
 
@@ -195,7 +199,7 @@ onMounted(async () => {
           </div>
 
           <div class="flex gap-1 justify-between">
-            <button @click="clearPlayerData()" class="bg-zinc-400 text-white rounded-sm px-2 py-0.5 flex gap-1 ">
+            <button @click="clearPlayerData()" class="bg-zinc-400 text-white hover:cursor-pointer rounded-sm px-2 py-0.5 flex gap-1 ">
                 <!-- <span>Clear</span> -->
                 <Icon class="my-auto" icon="radix-icons:reload"/>
             </button>
